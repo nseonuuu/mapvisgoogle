@@ -5,10 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>힙한 웹사이트</title>
-
-
-
+    <title>Ubiquitous Humanity Map</title>
     <style>
         /* 전체 스타일 초기화 */
         * {
@@ -27,25 +24,6 @@
             background-color: #44475a;
             padding: 1rem 0;
             text-align: center;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: #6272a4;
-            padding: 0.5rem 0;
-        }
-
-        nav a {
-            color: #f8f8f2;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s;
-        }
-
-        nav a:hover {
-            background-color: #50fa7b;
         }
 
         main {
@@ -70,68 +48,46 @@
 
 <body>
     <header>
-        <h1>힙한 웹사이트</h1>
+        <h1>Ubiquitous Humanity Map</h1>
     </header>
-
-    <nav>
-        <a href="#">홈</a>
-        <a href="#">서비스</a>
-        <a href="#">포트폴리오</a>
-        <a href="#">연락처</a>
-    </nav>
-
     <main>
-        <h2>환영합니다!</h2>
-        <p>이곳은 힙한 웹사이트입니다. 최신 트렌드와 디자인을 경험해보세요.</p>
         <div id="map"></div>
     </main>
-
     <footer>
-        <p>&copy; 2023 힙한 웹사이트. 모든 권리 보유.</p>
-    <footer>
-    <p>&copy; 2023 힙한 웹사이트. 모든 권리 보유.</p>
-</footer>
+        <p>&copy; 2023 Ubiquitous Humanity. 모든 권리 보유.</p>
+    </footer>
 
-<!-- 지도 초기화 스크립트 -->
-<script>
-    // Google Maps API 초기화
-    function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 37.5642135, lng: -127.0016985},
-            zoom: 12
-        });
-
-        function addMarkerWithCSVData(csvData) {
-            var lat = parseFloat(csvData.latitude);
-            var lng = parseFloat(csvData.longitude);
-            var marker = new google.maps.Marker({
-                position: {lat: lat, lng: lng},
-                map: map,
-                title: csvData.name
+    <script>
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 37.5642135, lng: 126.0016985},
+                zoom: 12
             });
+
+            fetch('RT_SU_231015.csv')
+                .then(response => response.text())
+                .then(data => {
+                    var csvRows = data.split('\n');
+                    for (var i = 1; i < csvRows.length; i++) {
+                        var csvData = csvRows[i].split(',');
+                        var lat = parseFloat(csvData[0]);
+                        var lng = parseFloat(csvData[1]);
+                        var marker = new google.maps.Marker({
+                            position: {lat: lat, lng: lng},
+                            map: map,
+                            title: csvData[2]
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching CSV data:', error);
+                });
         }
+    </script>
 
-        fetch('RT_SU_231015.csv')
-            .then(response => response.text())
-            .then(data => {
-                var csvRows = data.split('\n');
-                for (var i = 1; i < csvRows.length; i++) {
-                    var csvData = csvRows[i].split(',');
-                    addMarkerWithCSVData({
-                        latitude: csvData[0],
-                        longitude: csvData[1],
-                        name: csvData[2]
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching CSV data:', error);
-            });
-    }
-</script>
-
-<!-- Google Maps API 스크립트 -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfIJr9chjGvUNWDbTTstaoTOwXmtm2zi8&libraries=places&callback=initMap"></script>
+    <!-- Google Maps API 스크립트 -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfIJr9chjGvUNWDbTTstaoTOwXmtm2zi8Y&callback=initMap"></script>
 
 </body>
+
 </html>
