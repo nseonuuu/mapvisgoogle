@@ -295,6 +295,8 @@
     }
 
     function geocodeAddress(geocoder, address, callback) {
+        const geocoder = new google.maps.Geocoder(); 
+        
         geocoder.geocode({ 'address': address }, function (results, status) {
             if (status === 'OK') {
                 callback(results[0].geometry.location);
@@ -314,7 +316,7 @@
                     header: true,
                     skipEmptyLines: true
                 });
-
+        console.log(row);
                 results.data.forEach(row => {
                     // Check if both rows have valid data
                     if (row['관련 지역'] && row['신고 인원']) {
