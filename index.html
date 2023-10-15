@@ -22,6 +22,7 @@
             </button>
         </div>
         <div id="map"></div>
+        <div id="dataframe-container"></div>
     </main>
     <footer>
         <p>&copy; Copyright 2017. cizipcommunity. All rights reserved.</p>
@@ -312,16 +313,16 @@
                         header: true,
                         skipEmptyLines: true
                     });
-
+        
                     results.data.forEach(row => {
                         // Check if both rows have valid data
                         if (row['관련 지역'] && row['신고 인원']) {
                             const address = row['관련 지역'];
                             const population = parseInt(row['신고 인원'], 10); 
-
+        
                             geocodeAddress(new google.maps.Geocoder(), address, function(location) {
                                 const radius = Math.sqrt(population) * 10;
-
+        
                                 new google.maps.Circle({
                                     strokeColor: '#FF0000',
                                     strokeOpacity: 0.1,
@@ -344,11 +345,35 @@
                             });
                         }
                     });
+        
+                    // Generate the HTML table from the parsed data
+                    var html = '<table class="dataframe">';
+                    html += '<thead><tr>';
+                    results.meta.fields.forEach(field => {
+                        html += '<th>' + field + '</th>';
+                    });
+                    html += '</tr></thead>';
+        
+                    html += '<tbody>';
+                    results.data.forEach(row => {
+                        html += '<tr>';
+                        results.meta.fields.forEach(field => {
+                            html += '<td>' + row[field] + '</td>';
+                        });
+                        html += '</tr>';
+                    });
+                    html += '</tbody>';
+                    html += '</table>';
+        
+                    // Insert the generated table into the webpage
+                    document.getElementById("dataframe-container").innerHTML = html;
+        
                 })
                 .catch(error => {
                     console.error('Error loading or parsing the CSV:', error);
                 });
         }
+
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfIJr9chjGvUNWDbTTstaoTOwXmtm2zi8&callback=initMap&libraries=places"></script>
 
