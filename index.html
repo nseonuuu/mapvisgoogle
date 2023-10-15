@@ -29,6 +29,8 @@
     </footer>
 
 <script>
+    var map;
+    
     function initMap() {
         var customMapStyle = [
           {
@@ -219,7 +221,7 @@
         ];
 
                     
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 37.5642135, lng: 127.0016985},
             zoom: 11,
             styles: customMapStyle
