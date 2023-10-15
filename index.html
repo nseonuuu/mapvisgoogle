@@ -304,53 +304,53 @@
             .catch(error => {
                 console.error('Error during geocoding:', error);
             });
+    }    
+
+    function loadAndPlotAddresses() {
+        // Use fetch API to load the CSV file
+        fetch('RT_SU_231015.csv')
+            .then(response => response.text())
+            .then(data => {
+                // Use PapaParse to parse the CSV content
+                const results = Papa.parse(data, {
+                    header: true,
+                    skipEmptyLines: true
+                });
+
+                results.data.forEach(row => {
+                    // Check if both columns have valid data
+                    if (row['관련 지역'] && row['신고 인원']) {
+                        const address = row['관련 지역'].substr(0, 4);
+                        const population = parseInt(row['신고 인원'], 10); 
+
+                        geocodeAddress(address, function(location) {
+                            const radius = Math.sqrt(population) * 10;
+
+                            new google.maps.Circle({
+                                strokeColor: '#FF0000',
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                                fillColor: '#FF0000',
+                                fillOpacity: 0.35,
+                                map: map,
+                                center: location,
+                                radius: radius
+                            });
+
+                            new google.maps.Marker({
+                                position: location,
+                                map: map,
+                                title: address
+                            });
+                        });
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error loading or parsing the CSV:', error);
+            });
     }
 
-function loadAndPlotAddresses() {
-    // Use fetch API to load the CSV file
-    fetch('RT_SU_231015.csv')
-        .then(response => response.text())
-        .then(data => {
-            // Use PapaParse to parse the CSV content
-            const results = Papa.parse(data, {
-                header: true,
-                skipEmptyLines: true
-            });
-
-            results.data.forEach(row => {
-                const address = row['관련 지역'].substr;
-                const population = parseInt(row['신고 인원'], 10); // Parse the value from the '신고 인원' column
-
-                geocodeAddress(address, function(location) {
-                    // If you want to use the circle representation
-                    const radius = Math.sqrt(population) * 10; // Example: square root scaling multiplied by a factor
-
-                    new google.maps.Circle({
-                        strokeColor: '#FF0000',
-                        strokeOpacity: 0.8,
-                        strokeWeight: 2,
-                        fillColor: '#FF0000',
-                        fillOpacity: 0.35,
-                        map: map,
-                        center: location,
-                        radius: radius
-                    });
-
-                    // If you also want to have the marker (you can remove this part if you don't want markers)
-                    new google.maps.Marker({
-                        position: location,
-                        map: map,
-                        title: address
-                    });
-                });
-            });
-        })
-        .catch(error => {
-            console.error('Error loading or parsing the CSV:', error);
-        });
-}
-
-</script>
 
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfIJr9chjGvUNWDbTTstaoTOwXmtm2zi8&callback=initMap&libraries=places"></script>
