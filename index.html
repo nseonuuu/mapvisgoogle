@@ -315,8 +315,8 @@
                     skipEmptyLines: true
                 });
 
-                // Extract the address data from the '집회 장소(행진로)' column
-                const addresses = results.data.map(row => row['집회 장소(행진로)'].substr(0, 4));
+                // Extract the address data from the '관련 지역' column
+                const addresses = results.data.map(row => row['관련 지역'].substr(0, 4));
 
                 // Geocode and plot each address
                 addresses.forEach(address => {
