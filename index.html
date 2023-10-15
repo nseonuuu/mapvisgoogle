@@ -319,9 +319,9 @@
 
                 results.data.forEach(row => {
                     // Check if both columns have valid data
-                    if (row['관련 지역'] && row['신고 인원']) {
-                        const address = row['관련 지역'].substr(0, 4);
-                        const population = parseInt(row['신고 인원'], 10); 
+                    if (column['관련 지역'] && column['신고 인원']) {
+                        const address = column['관련 지역'];
+                        const population = parseInt(column['신고 인원'], 10); 
 
                         geocodeAddress(address, function(location) {
                             const radius = Math.sqrt(population) * 10;
