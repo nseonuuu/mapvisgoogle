@@ -318,7 +318,7 @@ function loadAndPlotAddresses() {
             });
 
             results.data.forEach(row => {
-                const address = row['관련 지역'].substr(0, 4);
+                const address = row['관련 지역'].substr;
                 const population = parseInt(row['신고 인원'], 10); // Parse the value from the '신고 인원' column
 
                 geocodeAddress(address, function(location) {
