@@ -2,6 +2,7 @@
 <html lang="ko">
 
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,70 +99,123 @@
         <p>&copy; 2023 Ubiquitous Humanity. 모든 권리 보유.</p>
     </footer>
 
-    <script>
-        function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: 37.5642135, lng: 127.0016985},
-                zoom: 11
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 37.5642135, lng: 127.0016985},
+            zoom: 11
+        });
+
+        const searchBox = new google.maps.places.SearchBox(document.getElementById("pac-input"));
+
+        map.addListener("bounds_changed", () => {
+            searchBox.setBounds(map.getBounds());
+        });
+
+        let markers = [];
+
+        searchBox.addListener("places_changed", () => {
+            const places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+                return;
+            }
+
+            markers.forEach((marker) => {
+                marker.setMap(null);
             });
+            markers = [];
 
-            const searchBox = new google.maps.places.SearchBox(document.getElementById("pac-input"));
-
-            map.addListener("bounds_changed", () => {
-                searchBox.setBounds(map.getBounds());
-            });
-
-            let markers = [];
-
-            searchBox.addListener("places_changed", () => {
-                const places = searchBox.getPlaces();
-
-                if (places.length == 0) {
+            const bounds = new google.maps.LatLngBounds();
+            places.forEach((place) => {
+                if (!place.geometry || !place.geometry.location) {
+                    console.log("Returned place contains no geometry");
                     return;
                 }
+                const icon = {
+                    url: place.icon,
+                    size: new google.maps.Size(71, 71),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(25, 25),
+                };
 
-                markers.forEach((marker) => {
-                    marker.setMap(null);
+                markers.push(
+                    new google.maps.Marker({
+                        map,
+                        icon,
+                        title: place.name,
+                        position: place.geometry.location,
+                    })
+                );
+
+                if (place.geometry.viewport) {
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
+            });
+            map.fitBounds(bounds);
+        });
+        
+        document.getElementById('resetButton').addEventListener('click', function() {
+            map.setCenter({lat: 37.5642135, lng: 127.0016985});
+            map.setZoom(11);
+        });
+
+        // Plot the addresses after map initialization
+        loadAndPlotAddresses();
+    }
+
+    function geocodeAddress(address, callback) {
+        const apiKey = 'YOUR_GOOGLE_API_KEY';  // Replace with your actual API key
+        const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'OK' && data.results && data.results[0] && data.results[0].geometry && data.results[0].geometry.location) {
+                    callback(data.results[0].geometry.location);
+                } else {
+                    console.error(`Failed to geocode address: ${address}. Status: ${data.status}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error during geocoding:', error);
+            });
+    }
+
+    function loadAndPlotAddresses() {
+        // Use fetch API to load the CSV file
+        fetch('/path_to_your_csv/RT_SU_231015.csv')
+            .then(response => response.text())
+            .then(data => {
+                // Use PapaParse to parse the CSV content
+                const results = Papa.parse(data, {
+                    header: true,
+                    skipEmptyLines: true
                 });
-                markers = [];
 
-                const bounds = new google.maps.LatLngBounds();
-                places.forEach((place) => {
-                    if (!place.geometry || !place.geometry.location) {
-                        console.log("Returned place contains no geometry");
-                        return;
-                    }
-                    const icon = {
-                        url: place.icon,
-                        size: new google.maps.Size(71, 71),
-                        origin: new google.maps.Point(0, 0),
-                        anchor: new google.maps.Point(17, 34),
-                        scaledSize: new google.maps.Size(25, 25),
-                    };
+                // Extract the address data from the '집회 장소(행진로)' column
+                const addresses = results.data.map(row => row['집회 장소(행진로)'].substr(0, 4));
 
-                    markers.push(
+                // Geocode and plot each address
+                addresses.forEach(address => {
+                    geocodeAddress(address, function(location) {
                         new google.maps.Marker({
-                            map,
-                            icon,
-                            title: place.name,
-                            position: place.geometry.location,
-                        })
-                    );
-
-                    if (place.geometry.viewport) {
-                        bounds.union(place.geometry.viewport);
-                    } else {
-                        bounds.extend(place.geometry.location);
-                    }
+                            position: location,
+                            map: map,
+                            title: address
+                        });
+                    });
                 });
-                map.fitBounds(bounds);
+            })
+            .catch(error => {
+                console.error('Error loading or parsing the CSV:', error);
             });
-            document.getElementById('resetButton').addEventListener('click', function() {
-                map.setCenter({lat: 37.5642135, lng: 127.0016985});
-                map.setZoom(11);
-            });
-        }
-    </script>
+    }
+</script>
+
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfIJr9chjGvUNWDbTTstaoTOwXmtm2zi8&callback=initMap&libraries=places"></script>
 
