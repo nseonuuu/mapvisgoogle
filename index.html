@@ -32,6 +32,7 @@
     var map;
     
     function initMap() {
+        console.log("initMap called");
         var customMapStyle = [
           {
             "elementType": "geometry",
@@ -227,6 +228,11 @@
             styles: customMapStyle
         });
 
+        map.addListener("tilesloaded", function() {
+            console.log("Map fully loaded");
+            loadAndPlotAddresses();
+        });
+        
         const searchBox = new google.maps.places.SearchBox(document.getElementById("pac-input"));
 
         map.addListener("bounds_changed", () => {
