@@ -288,23 +288,15 @@
         loadAndPlotAddresses();
     }
 
-    function geocodeAddress(address, callback) {
-        const apiKey = 'AIzaSyBfIJr9chjGvUNWDbTTstaoTOwXmtm2zi8';  // Replace with your actual API key
-        const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
-
-        fetch(apiUrl)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'OK' && data.results && data.results[0] && data.results[0].geometry && data.results[0].geometry.location) {
-                    callback(data.results[0].geometry.location);
-                } else {
-                    console.error(`Failed to geocode address: ${address}. Status: ${data.status}`);
-                }
-            })
-            .catch(error => {
-                console.error('Error during geocoding:', error);
-            });
-    }    
+    function geocodeAddress(geocoder, address, callback) {
+        geocoder.geocode({ 'address': address }, function (results, status) {
+            if (status === 'OK') {
+                callback(results[0].geometry.location);
+            } else {
+                console.error(`Failed to geocode address: ${address}. Status: ${status}`);
+            }
+        });
+    }
 
     function loadAndPlotAddresses() {
         // Use fetch API to load the CSV file
@@ -317,11 +309,11 @@
                     skipEmptyLines: true
                 });
 
-                results.data.forEach(column => {
-                    // Check if both columns have valid data
-                    if (column['관련 지역'] && column['신고 인원']) {
-                        const address = column['관련 지역'];
-                        const population = parseInt(column['신고 인원'], 10); 
+                results.data.forEach(row => {
+                    // Check if both rows have valid data
+                    if (row['관련 지역'] && row['신고 인원']) {
+                        const address = row['관련 지역'];
+                        const population = parseInt(row['신고 인원'], 10); 
 
                         geocodeAddress(address, function(location) {
                             const radius = Math.sqrt(population) * 10;
