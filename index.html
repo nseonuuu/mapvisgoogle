@@ -35,7 +35,7 @@
             console.log("initMap called");
 
             var trafficLayer = new google.maps.TrafficLayer();
-
+            /*
             var customMapStyle = [
                       {
             "elementType": "geometry",
@@ -222,12 +222,12 @@
               }
             ]
           }
-        ];
+        ]; */
 
             map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 37.5642135, lng: 127.0016985},
                 zoom: 10,
-                styles: customMapStyle,
+                /* styles: customMapStyle, */
                 gestureHandling: 'greedy'
             });
 
