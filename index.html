@@ -30,7 +30,8 @@
 
     <script>
         var map;
-
+        var trafficLayer = new google.maps.TrafficLayer();
+        
         function initMap() {
             console.log("initMap called");
             var customMapStyle = [
@@ -228,6 +229,25 @@
                 gestureHandling: 'greedy'
             });
 
+            // 기존의 코드에 교통 레이어를 추가합니다.
+            trafficLayer.setMap(map);
+
+            // 여기에 교통정보 레이어 토글 버튼 코드를 추가합니다.
+            var trafficControlDiv = document.createElement('div');
+            var trafficControl = new TrafficControl(trafficControlDiv, map);
+            trafficControlDiv.index = 1;
+            map.controls[google.maps.ControlPosition.TOP_CENTER].push(trafficControlDiv);
+        
+            map.addListener("tilesloaded", function() {
+                console.log("Map fully loaded");
+                loadAndPlotAddresses();
+            });
+        
+            map.addListener("tilesloaded", function() {
+                console.log("Map fully loaded");
+                loadAndPlotAddresses();
+            });
+
             map.addListener("tilesloaded", function() {
                 console.log("Map fully loaded");
                 loadAndPlotAddresses();
@@ -293,6 +313,38 @@
             // Plot the addresses after map initialization
             loadAndPlotAddresses();
         }
+
+        // 교통 레이어 컨트롤 클래스
+        function TrafficControl(controlDiv, map) {
+            var controlUI = document.createElement('div');
+            controlUI.style.backgroundColor = '#fff';
+            controlUI.style.border = '2px solid #fff';
+            controlUI.style.borderRadius = '3px';
+            controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+            controlUI.style.cursor = 'pointer';
+            controlUI.style.marginTop = '10px';
+            controlUI.style.textAlign = 'center';
+            controlDiv.appendChild(controlUI);
+        
+            var controlText = document.createElement('div');
+            controlText.style.color = 'rgb(25,25,25)';
+            controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+            controlText.style.fontSize = '16px';
+            controlText.style.lineHeight = '38px';
+            controlText.style.paddingLeft = '5px';
+            controlText.style.paddingRight = '5px';
+            controlText.innerHTML = '교통정보';
+            controlUI.appendChild(controlText);
+        
+            controlUI.addEventListener('click', function() {
+                if (trafficLayer.getMap()) {
+                    trafficLayer.setMap(null);
+                } else {
+                    trafficLayer.setMap(map);
+                }
+            });
+        }
+        
 
         function geocodeAddress(geocoder, address, callback) {
             geocoder.geocode({ 'address': address }, function (results, status) {
