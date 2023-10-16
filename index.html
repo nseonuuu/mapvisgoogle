@@ -254,8 +254,6 @@
                 loadAndPlotAddresses();
             }); */
 
-            const searchBox = new google.maps.places.SearchBox(document.getElementById("pac-input"));
-
             map.addListener("bounds_changed", () => {
                 searchBox.setBounds(map.getBounds());
             });
