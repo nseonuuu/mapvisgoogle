@@ -231,6 +231,14 @@
                 styles: customMapStyle,
                 gestureHandling: 'greedy'
             });
+
+            const seoulBounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng(37.425, 126.764), // 남서쪽 좌표
+                new google.maps.LatLng(37.701, 127.183)  // 북동쪽 좌표
+            );
+            const searchBox = new google.maps.places.SearchBox(document.getElementById("pac-input"), {
+                bounds: seoulBounds
+            });
             
             // 기존의 코드에 교통 레이어를 추가합니다.
             /* trafficLayer.setMap(map);
