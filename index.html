@@ -30,13 +30,13 @@
 
     <script>
         var map;
-        var trafficLayer;
+        /* var trafficLayer; */
         
         function initMap() {
             console.log("initMap called");
 
             trafficLayer = new google.maps.TrafficLayer();
-            /*
+            
             var customMapStyle = [
                       {
             "elementType": "geometry",
@@ -223,17 +223,17 @@
               }
             ]
           }
-        ]; */
+        ]; 
 
             map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 37.5642135, lng: 127.0016985},
                 zoom: 10,
-                /* styles: customMapStyle, */
+                styles: customMapStyle,
                 gestureHandling: 'greedy'
             });
-
+            
             // 기존의 코드에 교통 레이어를 추가합니다.
-            trafficLayer.setMap(map);
+            /* trafficLayer.setMap(map);
 
             // 여기에 교통정보 레이어 토글 버튼 코드를 추가합니다.
             var trafficControlDiv = document.createElement('div');
@@ -244,17 +244,7 @@
             map.addListener("tilesloaded", function() {
                 console.log("Map fully loaded");
                 loadAndPlotAddresses();
-            });
-        
-            map.addListener("tilesloaded", function() {
-                console.log("Map fully loaded");
-                loadAndPlotAddresses();
-            });
-
-            map.addListener("tilesloaded", function() {
-                console.log("Map fully loaded");
-                loadAndPlotAddresses();
-            });
+            }); */
 
             const searchBox = new google.maps.places.SearchBox(document.getElementById("pac-input"));
 
@@ -316,9 +306,9 @@
             // Plot the addresses after map initialization
             loadAndPlotAddresses();
         }
-
+        
         // 교통 레이어 컨트롤 클래스
-        function TrafficControl(controlDiv, map) {
+        /* function TrafficControl(controlDiv, map) {
             var controlUI = document.createElement('div');
             controlUI.style.backgroundColor = '#fff';
             controlUI.style.border = '2px solid #fff';
@@ -347,7 +337,7 @@
                 }
             });
         }
-        
+        */ 
 
         function geocodeAddress(geocoder, address, callback) {
             geocoder.geocode({ 'address': address }, function (results, status) {
